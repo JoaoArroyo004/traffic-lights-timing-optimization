@@ -1,8 +1,8 @@
-***Starting server on port 57581 ***
-Loading net-file from 'joined_buslanes.net.xml' ... done (31ms).
-Loading additional-files from 'joined_bus_stops.add.xml' ... done (0ms).
+***Starting server on port 36513 ***
+Loading net-file from 'joined_buslanes.net.xml' ... done (52ms).
+Loading additional-files from 'joined_bus_stops.add.xml' ... done (1ms).
 Loading additional-files from 'joined_detectors.add.xml' ... done (1ms).
-Loading additional-files from 'joined_vtypes.add.xml' ... done (1ms).
+Loading additional-files from 'joined_vtypes.add.xml' ... done (4ms).
 Loading additional-files from 'joined_tls.add.xml' ... done (1ms).
 Loading route-files incrementally from 'joined.rou.xml'
 Loading route-files incrementally from 'joined_busses.rou.xml'
@@ -15,10 +15,10 @@ Warning: Vehicle 'Gandhi_60_1842' ends teleporting on edge 'a124', time=4377.00.
 Simulation ended at time: 5207.00.
 Reason: TraCI requested termination.
 Performance:
- Duration: 21.57s
- TraCI-Duration: 2.18s
- Real time factor: 241.411
- UPS: 199488.849738
+ Duration: 23.62s
+ TraCI-Duration: 2.11s
+ Real time factor: 220.43
+ UPS: 182151.172636
 Vehicles:
  Inserted: 11176
  Running: 0

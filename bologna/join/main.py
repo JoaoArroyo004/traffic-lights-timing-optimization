@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import os
+import json
 import xml.etree.ElementTree as ET
 import numpy as np
 import traci
+from get_tl_data import discover_from_xml
 
 
 CFG = "run.sumocfg"
@@ -117,17 +119,23 @@ def run_simulation():
 
 # ---------------- Main (exemplo) ----------------
 if __name__ == "__main__":
-    # 1) Simulação
+    
+    #Print 
+    traffic_lights_config = discover_from_xml("joined_tls.add.xml")
+    print("\n=== Configuração dos Semáforos ===")
+    print(json.dumps(traffic_lights_config, indent=4, ensure_ascii=False))
+    
+    #Simulação
     run_simulation()
 
-    # 2) Obtém objetivos
+    #Obtém objetivos
     f, extras = get_objectives()
     f1, f2 = f
     print("\n=== Objetivos p/ NSGA-II ===")
     print(f"f1 = mean(duration)     = {f1:.4f} s")
     print(f"f2 = mean(waitingTime)  = {f2:.4f} s")
 
-    # 3) Print dos resultados
+    #Print dos resultados
     t = extras["tripinfo"]
     print("\n--- Tripinfo (médias) ---")
     for k in ["nVehicles", "timeLoss", "routeLength", "speedFactor"]:
