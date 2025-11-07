@@ -1,0 +1,26 @@
+***Starting server on port 57581 ***
+Loading net-file from 'joined_buslanes.net.xml' ... done (31ms).
+Loading additional-files from 'joined_bus_stops.add.xml' ... done (0ms).
+Loading additional-files from 'joined_detectors.add.xml' ... done (1ms).
+Loading additional-files from 'joined_vtypes.add.xml' ... done (1ms).
+Loading additional-files from 'joined_tls.add.xml' ... done (1ms).
+Loading route-files incrementally from 'joined.rou.xml'
+Loading route-files incrementally from 'joined_busses.rou.xml'
+Loading done.
+Simulation version 1.24.0 started with time: 0.00.
+Warning: Teleporting vehicle 'Pepoli_11_986'; waited too long (yield), lane='a201c_1', time=2458.00.
+Warning: Vehicle 'Pepoli_11_986' ends teleporting on edge 'a204a[0]', time=2458.00.
+Warning: Teleporting vehicle 'Gandhi_60_1842'; waited too long (jam), lane='a1b_1', time=4374.00.
+Warning: Vehicle 'Gandhi_60_1842' ends teleporting on edge 'a124', time=4377.00.
+Simulation ended at time: 5207.00.
+Reason: TraCI requested termination.
+Performance:
+ Duration: 21.57s
+ TraCI-Duration: 2.18s
+ Real time factor: 241.411
+ UPS: 199488.849738
+Vehicles:
+ Inserted: 11176
+ Running: 0
+ Waiting: 0
+ Teleports: 2 (Jam: 1, Yield: 1)
