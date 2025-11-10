@@ -1,0 +1,24 @@
+[project]
+name = "traffic-lights-timing-optimization"
+version = "0.1.0"
+description = "Semaphore optimization for static networks"
+authors = [
+    {name = "Joao Arroyo",email = "comp.arroyo@gmail.com"}
+]
+
+packages = [{ include = "traffic_lights_timing_optimization", from = "src" }]
+readme = "README.md"
+requires-python = ">=3.11,<4"
+dependencies = [
+    "numpy (>=2.3.4,<3.0.0)",
+    "pymoo (>=0.6.1.5,<0.7.0.0)",
+    "matplotlib (>=3.10.7,<4.0.0)",
+    "traci (>=1.24.0,<2.0.0)",
+    "sumolib (>=1.24.0,<2.0.0)",
+    "sumo (>=2.3.12,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
