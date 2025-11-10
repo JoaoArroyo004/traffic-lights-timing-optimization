@@ -1,0 +1,11 @@
+<routes>
+    <vType id="car" accel="1.0" decel="4.5" sigma="0.5" length="5" minGap="2.5" maxSpeed="13.9" color="1,0,0"/>
+
+    <!-- Vehicles from WEST (left) -->
+    <flow id="from_west_straight" begin="0" end="200" number="70" from="west_in" to="north_out" type="car" departLane="best" departSpeed="max"/>
+    <flow id="from_west_right" begin="0" end="200" number="70" from="west_in" to="east_out" type="car" departLane="best" departSpeed="max"/>
+
+    <!-- Vehicles from SOUTH (bottom) -->
+    <flow id="from_south_straight" begin="0" end="200" number="35" from="south_in" to="north_out" type="car" departLane="best" departSpeed="max"/>
+    <flow id="from_south_right" begin="0" end="200" number="35" from="south_in" to="east_out" type="car" departLane="best" departSpeed="max"/>
+</routes>

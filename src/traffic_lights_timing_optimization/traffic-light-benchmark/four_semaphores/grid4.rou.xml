@@ -1,0 +1,13 @@
+<routes>
+    <vType id="car" accel="2.6" decel="4.5" sigma="0.5" length="5" maxSpeed="13.9"/>
+
+    <!-- Vehicles from entry points -->
+    <flow id="f1" type="car" begin="0" end="200" period="5" from="in_N1_N1" to="N3_in_N3"/>
+    <flow id="f2" type="car" begin="0" end="200" period="7" from="in_N1_N1" to="N4_in_N4"/>
+    <flow id="f3" type="car" begin="0" end="200" period="6" from="in_N3_N3" to="N1_in_N1"/>
+    <flow id="f4" type="car" begin="0" end="200" period="8" from="in_N3_N3" to="N2_in_N2"/>
+    <flow id="f5" type="car" begin="0" end="200" period="15" from="in_N2_N2" to="N4_in_N4"/>
+    <flow id="f6" type="car" begin="0" end="200" period="12" from="in_N2_N2" to="N3_in_N3"/>
+    <flow id="f7" type="car" begin="0" end="200" period="7" from="in_N4_N4" to="N2_in_N2"/>
+    <flow id="f8" type="car" begin="0" end="200" period="9" from="in_N4_N4" to="N3_in_N3"/>
+</routes>

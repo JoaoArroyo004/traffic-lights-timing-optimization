@@ -1,0 +1,13 @@
+<edges>
+    <!-- Incoming edges to intersection -->
+    <edge id="west_in" from="W" to="C" numLanes="1" speed="13.9"/>
+    <edge id="south_in" from="S" to="C" numLanes="1" speed="13.9"/>
+
+    <!-- Outgoing edges from intersection -->
+    <edge id="east_out" from="C" to="E" numLanes="1" speed="13.9"/>
+    <edge id="north_out" from="C" to="N" numLanes="1" speed="13.9"/>
+
+    <!-- Optional: opposite direction edges (for return flow, not used now) -->
+    <edge id="west_out" from="C" to="W" numLanes="1" speed="13.9"/>
+    <edge id="south_out" from="C" to="S" numLanes="1" speed="13.9"/>
+</edges>

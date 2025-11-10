@@ -1,0 +1,13 @@
+<nodes>
+    <!-- Intersections -->
+    <node id="N1" x="0" y="100" type="traffic_light"/>
+    <node id="N2" x="100" y="100" type="traffic_light"/>
+    <node id="N3" x="0" y="0" type="traffic_light"/>
+    <node id="N4" x="100" y="0" type="traffic_light"/>
+
+    <!-- Entry nodes (for vehicle generation) -->
+    <node id="in_N1" x="-50" y="100" type="priority"/>
+    <node id="in_N3" x="0" y="-50" type="priority"/>
+    <node id="in_N2" x="150" y="100" type="priority"/>
+    <node id="in_N4" x="150" y="0" type="priority"/>
+</nodes>

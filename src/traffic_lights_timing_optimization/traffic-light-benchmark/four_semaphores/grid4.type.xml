@@ -1,0 +1,3 @@
+<types>
+    <type id="car" numLanes="1" priority="3" speed="13.9"/>
+</types>
