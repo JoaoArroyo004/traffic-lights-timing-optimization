@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-11-13 21:52:22 by Eclipse SUMO netedit Version 1.24.0
+<!-- generated on 2025-11-15 12:32:05 by Eclipse SUMO netedit Version 1.24.0
 -->
 
 <additional xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/additional_file.xsd">
@@ -25,21 +25,17 @@
         <detExit lane="114358444#2_2" pos="233.09"/>
     </entryExitDetector>
     <entryExitDetector id="e3_10" pos="384.13,401.80" period="9000.00" file="car" vTypes="passenger">
-        <detEntry lane="757114338_3" pos="19.55"/>
         <detEntry lane="757114338_2" pos="19.58"/>
         <detEntry lane="757114338_1" pos="19.56"/>
         <detEntry lane="757114338_0" pos="19.49"/>
-        <detExit lane="757114338_3" pos="20.56"/>
         <detExit lane="757114338_2" pos="20.57"/>
         <detExit lane="757114338_1" pos="20.57"/>
         <detExit lane="757114338_0" pos="20.50"/>
     </entryExitDetector>
     <entryExitDetector id="e3_11" pos="387.83,401.70" period="9000.00" file="truck" vTypes="truck">
-        <detEntry lane="757114338_3" pos="22.94"/>
         <detEntry lane="757114338_2" pos="22.91"/>
         <detEntry lane="757114338_1" pos="22.89"/>
         <detEntry lane="757114338_0" pos="22.88"/>
-        <detExit lane="757114338_3" pos="23.93"/>
         <detExit lane="757114338_2" pos="23.91"/>
         <detExit lane="757114338_1" pos="23.86"/>
         <detExit lane="757114338_0" pos="23.91"/>
@@ -61,39 +57,43 @@
         <detExit lane="114358444#2_2" pos="223.82"/>
     </entryExitDetector>
     <entryExitDetector id="e3_4" pos="378.30,401.26" period="9000.00" file="motorcycle" vTypes="motorcycle">
-        <detEntry lane="757114338_3" pos="14.32"/>
         <detEntry lane="757114338_2" pos="14.27"/>
         <detEntry lane="757114338_1" pos="14.26"/>
         <detEntry lane="757114338_0" pos="14.20"/>
-        <detExit lane="757114338_3" pos="15.31"/>
         <detExit lane="757114338_2" pos="15.23"/>
         <detExit lane="757114338_1" pos="15.26"/>
         <detExit lane="757114338_0" pos="15.22"/>
     </entryExitDetector>
     <entryExitDetector id="e3_5" pos="371.76,400.68" period="9000.00" file="bus" vTypes="bus">
-        <detEntry lane="757114338_3" pos="6.83"/>
-        <detEntry lane="757114338_2" pos="6.90"/>
-        <detEntry lane="757114338_1" pos="6.93"/>
-        <detEntry lane="757114338_0" pos="6.96"/>
-        <detExit lane="757114338_3" pos="7.81"/>
-        <detExit lane="757114338_2" pos="7.87"/>
-        <detExit lane="757114338_1" pos="7.92"/>
         <detExit lane="757114338_0" pos="7.97"/>
+        <detExit lane="757114338_1" pos="7.92"/>
+        <detExit lane="757114338_2" pos="7.87"/>
+        <detEntry lane="757114338_0" pos="6.96"/>
+        <detEntry lane="757114338_1" pos="6.93"/>
+        <detEntry lane="757114338_2" pos="6.90"/>
     </entryExitDetector>
-    <entryExitDetector id="e3_6" pos="356.40,321.57" period="9000.00" file="bus" vTypes="bus">
-        <detEntry lane="155668628#0_0" pos="35.63"/>
-        <detExit lane="155668628#0_0" pos="36.58"/>
+    <entryExitDetector id="e3_6" pos="348.18,332.73" period="9000.00" file="bus" vTypes="bus">
+        <detEntry lane="155668628#0_1" pos="35.63"/>
+        <detExit lane="155668628#0_1" pos="36.58"/>
+        <detEntry lane="155668628#0_0" pos="35.62"/>
+        <detExit lane="155668628#0_0" pos="36.60"/>
     </entryExitDetector>
-    <entryExitDetector id="e3_7" pos="356.21,327.57" period="9000.00" file="motorcycle" vTypes="motorcycle">
-        <detEntry lane="155668628#0_0" pos="30.40"/>
-        <detExit lane="155668628#0_0" pos="31.34"/>
+    <entryExitDetector id="e3_7" pos="348.24,338.73" period="9000.00" file="motorcycle" vTypes="motorcycle">
+        <detEntry lane="155668628#0_1" pos="30.40"/>
+        <detExit lane="155668628#0_1" pos="31.34"/>
+        <detEntry lane="155668628#0_0" pos="30.37"/>
+        <detExit lane="155668628#0_0" pos="31.38"/>
     </entryExitDetector>
-    <entryExitDetector id="e3_8" pos="356.42,315.61" period="9000.00" file="truck" vTypes="truck">
-        <detEntry lane="155668628#0_0" pos="40.94"/>
-        <detExit lane="155668628#0_0" pos="41.93"/>
+    <entryExitDetector id="e3_8" pos="348.20,327.81" period="9000.00" file="truck" vTypes="truck">
+        <detEntry lane="155668628#0_1" pos="40.94"/>
+        <detExit lane="155668628#0_1" pos="41.93"/>
+        <detEntry lane="155668628#0_0" pos="40.90"/>
+        <detExit lane="155668628#0_0" pos="41.86"/>
     </entryExitDetector>
-    <entryExitDetector id="e3_9" pos="356.81,310.37" period="4000.00" file="car" vTypes="passenger">
+    <entryExitDetector id="e3_9" pos="349.74,322.62" period="4000.00" file="car" vTypes="passenger">
+        <detEntry lane="155668628#0_1" pos="46.05"/>
+        <detExit lane="155668628#0_1" pos="47.01"/>
         <detEntry lane="155668628#0_0" pos="46.05"/>
-        <detExit lane="155668628#0_0" pos="47.01"/>
+        <detExit lane="155668628#0_0" pos="46.98"/>
     </entryExitDetector>
 </additional>
