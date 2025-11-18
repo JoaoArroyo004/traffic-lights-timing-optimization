@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-11-15 13:27:16 by Eclipse SUMO netedit Version 1.24.0
+<!-- generated on 2025-11-18 11:21:37 by Eclipse SUMO netedit Version 1.24.0
 -->
 
 <routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">
@@ -14,9 +14,7 @@
         <stop busStop="bs_0" duration="20.00"/>
     </route>
     <route id="bus_south" edges="757993567#1 942300117#0 942300117#1 942300116 155668883 155668628#0" color="yellow"/>
-    <route id="bus_west" edges="757114340#0 760874795 114358444#0 114358444#1 114358444#2" color="yellow">
-        <stop busStop="bs_2" duration="20.00"/>
-    </route>
+    <route id="bus_west" edges="757114340#0 760874795 114358444#0 114358444#1 114358444#2" color="yellow"/>
     <!-- Vehicles, persons and containers (sorted by depart) -->
     <flow id="f_0" type="motorcycle" begin="0.00" departLane="free" departSpeed="last" color="red" from="757114340#0" to="114358444#2" via="760874795 114358444#0 114358444#1" end="3600.00" vehsPerHour="314.96"/>
     <flow id="f_1" type="motorcycle" begin="0.00" departLane="free" departSpeed="last" color="red" from="757114340#0" to="757114338" via="760874795 405521445#0 405521445#1 942300116 705881941 760874796#0" end="3600.00" vehsPerHour="4"/>
@@ -42,7 +40,9 @@
     <flow id="f_7" type="motorcycle" begin="0.00" departLane="free" departSpeed="last" color="red" from="-155668628#0" to="155668628#0" via="155668809 760874796#0 760874794#0 760874795 405521445#0 405521445#1 942300116 155668883" end="3600.00" vehsPerHour="5"/>
     <flow id="f_8" type="motorcycle" begin="0.00" departLane="free" departSpeed="last" color="red" from="-155668628#0" to="114358444#2" via="155668809 760874796#0 760874794#0 760874795 114358444#0 114358444#1" end="3600.00" vehsPerHour="45"/>
     <flow id="f_9" type="truck" begin="0.00" departLane="free" departSpeed="last" color="green" from="-155668628#0" to="757114338" via="155668809 760874796#0" end="3600.00" vehsPerHour="2"/>
-    <flow id="f_24" type="bus" begin="0.00" departLane="free" departSpeed="last" route="bus_west" end="3600.00" vehsPerHour="24"/>
+    <flow id="f_24" type="bus" begin="0.00" departLane="free" departSpeed="last" route="bus_west" end="3600.00" vehsPerHour="24">
+        <stop busStop="bs_1" duration="60.00"/>
+    </flow>
     <flow id="f_25" type="bus" begin="0.00" departLane="free" departSpeed="avg" route="bus_east" end="3600.00" vehsPerHour="23"/>
     <flow id="f_26" type="bus" begin="0.00" departLane="free" departSpeed="last" route="bus_south" end="3600.00" vehsPerHour="9"/>
 </routes>
