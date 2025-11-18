@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-11-18 11:24:11 by Eclipse SUMO netedit Version 1.24.0
+<!-- generated on 2025-11-18 12:26:27 by Eclipse SUMO netedit Version 1.24.0
 <neteditConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/neteditConfiguration.xsd">
 
     <input>
-        <sumocfg-file value="C:\Users\pacot\Desktop\Teste\demand.sumocfg"/>
-        <additional-files value="C:\Users\pacot\Desktop\Teste\demand.add.xml"/>
-        <route-files value="C:\Users\pacot\Desktop\Teste\demand.rou.xml"/>
         <sumo-net-file value="C:\Users\pacot\Desktop\Teste\network.net.xml"/>
     </input>
 
@@ -252,17 +249,12 @@
         <phase duration="1.50"  state="rrrrrrrrrrrr"/>
     </tlLogic>
     <tlLogic id="4077119253" type="static" programID="0" offset="0">
-        <phase duration="42.50" state="rGGG"/>
-        <phase duration="2"  state="ryyy"/>
-        <phase duration="1"  state="rrrr"/>
-        <phase duration="26.50" state="Grrr"/>
-        <phase duration="1.50"  state="yrrr"/>
-        <phase duration="1.50"  state="rrrr"/>
-    </tlLogic>
-    <tlLogic id="7040717760" type="static" programID="0" offset="0">
-        <phase duration="42.50" state="GG"/>
-        <phase duration="2"  state="yy"/>
-        <phase duration="30.50" state="rr"/>
+        <phase duration="42.50" state="rGGGGG"/>
+        <phase duration="2"  state="ryyyyy"/>
+        <phase duration="1"  state="rrrrrr"/>
+        <phase duration="26.50" state="Grrrrr"/>
+        <phase duration="1.50"  state="yrrrrr"/>
+        <phase duration="1.50"  state="rrrrrr"/>
     </tlLogic>
 
     <junction id="12810783753" type="priority" x="253.47" y="407.51" incLanes="114358444#1_0 114358444#1_1 114358444#1_2" intLanes=":12810783753_0_0 :12810783753_0_1 :12810783753_0_2" shape="252.56,412.23 254.67,402.86 254.39,402.80 252.26,412.16">
@@ -380,8 +372,8 @@
     <connection from="942300116" to="155668883" fromLane="0" toLane="0" via=":1680532863_0_0" dir="s" state="M"/>
     <connection from="942300116" to="155668883" fromLane="1" toLane="1" via=":1680532863_0_1" dir="s" state="M"/>
     <connection from="942300116" to="705881941" fromLane="1" toLane="0" via=":1680532863_2_0" dir="L" state="M"/>
-    <connection from="942300117#0" to="942300117#1" fromLane="0" toLane="0" via=":7040717760_0_0" tl="7040717760" linkIndex="0" dir="s" state="O"/>
-    <connection from="942300117#0" to="942300117#1" fromLane="1" toLane="1" via=":7040717760_0_1" tl="7040717760" linkIndex="1" dir="s" state="O"/>
+    <connection from="942300117#0" to="942300117#1" fromLane="0" toLane="0" via=":7040717760_0_0" tl="4077119253" linkIndex="4" dir="s" state="O"/>
+    <connection from="942300117#0" to="942300117#1" fromLane="1" toLane="1" via=":7040717760_0_1" tl="4077119253" linkIndex="5" dir="s" state="O"/>
     <connection from="942300117#1" to="942300116" fromLane="0" toLane="0" via=":4077119255_0_0" dir="s" state="M"/>
     <connection from="942300117#1" to="942300116" fromLane="1" toLane="1" via=":4077119255_0_1" dir="s" state="M"/>
 
