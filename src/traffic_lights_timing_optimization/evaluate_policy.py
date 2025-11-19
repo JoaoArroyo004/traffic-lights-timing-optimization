@@ -6,7 +6,24 @@ SOFT_INF = 1_000
 INF = 100_000_00
 LAST_VEHICLE_SPAWN = 3600.00 # TODO: automate this
 TIME_LIMIT = 10 * LAST_VEHICLE_SPAWN
+SIMULATION_TIME = 1_800 # How much time each simulation runs
 MAX_DEADLOCK = 200 # If no vehicle reaches a destination in a 200 consecutive step cout, halt.
+
+def simulation_ended():
+    veh_ids = traci.vehicle.getIDList()
+    if not veh_ids:
+        return False # Avoid stalling at the start.
+    # Notice that if there are no vehicles in the current network either:
+    # some of the spawned before SIMULATION_TIME still are gonna enter the network -> False
+    # no more spawned before are gonna enter the network. Then, either all vehicles have reached 
+    # their destination (traci.simulation.getMinExpectedNumber() == 0) or some vehicle will enter right away, triggering True in this function
+
+    for v in veh_ids:
+        departure_time = traci.vehicle.getDeparture(v)
+        if departure_time <= SIMULATION_TIME:
+            return False
+
+    return True
 
 def calculate_last_greens(green_times: list[float], semaphores_original_information: list[list[tuple[str,int]]],
                           cycle_time: float):
@@ -129,7 +146,7 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         last_arrival_count = 0
         consecutive_steps_no_arrival = 0
         halted_simulation = False
-        while traci.simulation.getMinExpectedNumber() > 0:
+        while traci.simulation.getMinExpectedNumber() > 0 and (not simulation_ended()):
             traci.simulationStep()
             
             queue_lengths = [traci.edge.getLastStepHaltingNumber(e) for e in graphEdges] # consider only stopped/halted edges
