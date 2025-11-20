@@ -77,23 +77,23 @@ class TrafficLightOptimizationSequential(Problem):
                                       path=self.path,
                                       gui=False, verbose=False)
             else:
-                metrics = {"avg_travel_time": INF, 
+                metrics = {"avg_waiting_time": INF, 
                         "avg_queue_system": INF,
                         "max_queue": INF,
                         }
 
             f1.append(metrics["avg_queue_system"])            
             # f1.append(metrics["max_queue"])            
-            f2.append(metrics["avg_travel_time"])
+            f2.append(metrics["avg_waiting_time"])
             
             with open("./logs_sequential.csv", "a", newline="") as f:
                 writer = csv.writer(f)
 
                 max_queue_fmt = f"{float(metrics['max_queue']):.2f}"
                 avg_queue_fmt = f"{float(metrics['avg_queue_system']):.2f}"
-                avg_tt_fmt = f"{float(metrics['avg_travel_time']):.2f}"
+                avg_waiting_time_fmt = f"{float(metrics['avg_waiting_time']):.2f}"
 
-                writer.writerow(["RESULTS:", avg_tt_fmt, avg_queue_fmt, max_queue_fmt])
+                writer.writerow(["RESULTS:", avg_waiting_time_fmt, avg_queue_fmt, max_queue_fmt])
                 writer.writerow([])
 
         out["F"] = np.column_stack([f1, f2])

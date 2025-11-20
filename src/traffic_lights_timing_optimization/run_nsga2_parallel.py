@@ -12,8 +12,8 @@ from pymoo.core.problem import StarmapParallelization
 manager = multiprocessing.Manager()
 shared_cache = manager.dict()
 
-CYCLE_TIME = 60
-SUMO_CONFIG_PATH = "./santo-andre-cassiano/demand.sumocfg"
+CYCLE_TIME = 75
+SUMO_CONFIG_PATH = "./santo-andre-extendido/demand.sumocfg"
 semaphores_information = fetch_graph_information(SUMO_CONFIG_PATH).copy()
 print(f"[DBG] semaphore information: {semaphores_information}")
 
@@ -28,13 +28,13 @@ problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=SUMO_CONF
                                     tolerance=0.5)
 
 algorithm = NSGA2(
-    pop_size=12,
+    pop_size=10,
     crossover= SBX(prob=0.9, eta=20),
     mutation = PM(prob=0.1, eta=20),
     eliminate_duplicates=True
 )
 
-termination = get_termination("n_gen", 20)
+termination = get_termination("n_gen", 10)
 
 res = minimize(problem,
                algorithm,

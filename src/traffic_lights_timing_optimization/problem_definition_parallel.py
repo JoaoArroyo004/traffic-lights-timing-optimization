@@ -96,22 +96,22 @@ class TrafficLightOptimizationParallel(ElementwiseProblem):
                 
                 self.shared_cache[cache_key] = metrics
         else:
-            metrics = {"avg_travel_time": INF, 
+            metrics = {"avg_waiting_time": INF, 
                     "avg_queue_system": INF,
                     "max_queue": INF,
                     }
 
         f1 = metrics["max_queue"]
         # f1 = metrics["avg_queue_system"]            
-        f2 = metrics["avg_travel_time"]
+        f2 = metrics["avg_waiting_time"]
             
         with open(log_file, "a", newline="") as f:
             writer = csv.writer(f)            
-            avg_tt_fmt = f"{float(metrics['avg_travel_time']):.2f}"
+            avg_waiting_time_fmt = f"{float(metrics['avg_waiting_time']):.2f}"
             avg_queue_fmt = f"{float(metrics['avg_queue_system']):.2f}"
             max_queue_fmt = f"{float(metrics['max_queue']):.2f}"
 
-            writer.writerow(["RESULTS:", avg_tt_fmt, avg_queue_fmt, max_queue_fmt])
+            writer.writerow(["RESULTS:", avg_waiting_time_fmt, avg_queue_fmt, max_queue_fmt])
             writer.writerow([])
         
         out["F"] = [f1, f2]

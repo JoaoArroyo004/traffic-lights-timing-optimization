@@ -10,8 +10,7 @@ from traffic_lights_timing_optimization.fetch_graph_information import fetch_gra
 SOFT_INF = 1_000
 INF = 100_000_00
 
-LAST_VEHICLE_SPAWN = 3600.00 # TODO: automate this
-SIMULATION_TIME = 900 # Time of last spawned vehicle which we wait to reach its destination
+SIMULATION_TIME = 1_800 # SIMULATION TIME
 MAX_DEADLOCK = 200 # If no vehicle reaches a destination in a 200 consecutive step cout, halt.
 
 def calculate_last_greens(green_times: list[float], semaphores_original_information: list[list[tuple[str,int]]],
@@ -122,28 +121,42 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         print("[DBG] Custom program applied successfully.\n Start simulation")        
         step: int = 0
         total_waiting_time: float = 0.0
-        total_vehicles: int = 0
+        total_arrivals: int = 0
         max_queue_length: int = 0
         graphEdges = traci.edge.getIDList()
         sum_queues: float = 0.0        
         last_arrival_count = 0
         consecutive_steps_no_arrival = 0
-        halted_simulation = False        
+        halted_simulation = False       
+        tracked_waiting_times = {} 
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() <= SIMULATION_TIME:
             traci.simulationStep()
+            total_arrivals += traci.simulation.getArrivedNumber()
             
-            queue_lengths = [traci.edge.getLastStepHaltingNumber(e) for e in graphEdges] # consider only stopped/halted edges
+            for vid in traci.vehicle.getIDList():
+                tracked_waiting_times[vid] = traci.vehicle.getAccumulatedWaitingTime(vid)
+                
+            for vid in traci.simulation.getArrivedIDList():
+                if vid in tracked_waiting_times:
+                    total_waiting_time += tracked_waiting_times.pop(vid)
+                else:
+                    print(f"[ERROR] Unkown vehicle: {vid}")
+            
+            queue_lengths = []
+            for edge in graphEdges:
+                halting = traci.edge.getLastStepHaltingNumber(edge)
+                lanes = traci.edge.getLaneNumber(edge)  # faster than getLaneIDs
+                if lanes > 0:
+                    queue_lengths.append(halting / lanes)
+                else:
+                    queue_lengths.append(0)
+
             for queue_len in queue_lengths:
                 sum_queues += queue_len
 
             step_max_queue = max(queue_lengths) if queue_lengths else 0
             if step_max_queue > max_queue_length:
-                max_queue_length = step_max_queue
-
-            veh_ids = traci.vehicle.getIDList()
-            total_vehicles += len(veh_ids)
-            for vid in veh_ids:
-                total_waiting_time += traci.vehicle.getWaitingTime(vid)                    
+                max_queue_length = step_max_queue                                    
             
             new_arrival_count = traci.simulation.getArrivedNumber()
             if new_arrival_count == last_arrival_count:
@@ -166,20 +179,20 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
 
         if halted_simulation:
             return {
-                "avg_travel_time": SOFT_INF, 
+                "avg_waiting_time": SOFT_INF, 
                 "avg_queue_system": SOFT_INF,
                 "max_queue": SOFT_INF,
             }
 
-        avg_queue_system = sum_queues / step
-        avg_waiting_time = total_waiting_time / max(1, total_vehicles)        
+        avg_queue_system = sum_queues / step        
+        avg_waiting_time = total_waiting_time / max(1, total_arrivals)
         if verbose:
             print(f"""[RESULTS]\nAvg waiting time: {avg_waiting_time:.2f}
                   \nMax per-edge queue length:     {max_queue_length}
                   \nAverage queue length:          {avg_queue_system:.2f}""")
         
         shutil.rmtree(tmp_dir)        
-        return {"avg_travel_time": avg_waiting_time, 
+        return {"avg_waiting_time": avg_waiting_time, 
                 "avg_queue_system": avg_queue_system,
                 "max_queue": max_queue_length,
                 }
