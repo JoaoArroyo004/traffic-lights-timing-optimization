@@ -18,7 +18,8 @@ dependencies = [
     "sumo (>=2.3.12,<3.0.0)",
     "fastapi (>=0.121.2,<0.122.0)",
     "uvicorn (>=0.38.0,<0.39.0)",
-    "python-multipart (>=0.0.20,<0.0.21)"
+    "python-multipart (>=0.0.20,<0.0.21)",
+    "sqlmodel (>=0.0.27,<0.0.28)"
 ]
 
 
