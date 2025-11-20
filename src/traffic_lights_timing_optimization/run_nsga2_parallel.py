@@ -9,9 +9,11 @@ from traffic_lights_timing_optimization.problem_definition_parallel import Traff
 import multiprocessing
 from pymoo.core.problem import StarmapParallelization
 
+manager = multiprocessing.Manager()
+shared_cache = manager.dict()
+
 CYCLE_TIME = 60
-# SUMO_CONFIG_PATH = "./traffic-light-benchmark/four_semaphores/traffic.sumocfg"
-SUMO_CONFIG_PATH = "./santo-andre-benchmark/demand.sumocfg"
+SUMO_CONFIG_PATH = "./santo-andre-cassiano/demand.sumocfg"
 semaphores_information = fetch_graph_information(SUMO_CONFIG_PATH).copy()
 print(f"[DBG] semaphore information: {semaphores_information}")
 
@@ -21,16 +23,18 @@ runner = StarmapParallelization(pool.starmap)
 problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=SUMO_CONFIG_PATH,
                                    semaphores_information=semaphores_information,
                                     elementwise_runner=runner,
-                                    elementwise_evaluation=True)
+                                    elementwise_evaluation=True,
+                                    shared_cache=shared_cache,
+                                    tolerance=0.5)
 
 algorithm = NSGA2(
-    pop_size=4,
+    pop_size=12,
     crossover= SBX(prob=0.9, eta=20),
     mutation = PM(prob=0.1, eta=20),
     eliminate_duplicates=True
 )
 
-termination = get_termination("n_gen", 4)
+termination = get_termination("n_gen", 20)
 
 res = minimize(problem,
                algorithm,
@@ -49,7 +53,7 @@ print(res.X[0])
 F = res.F
 plt.figure(figsize=(6, 5))
 plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
-plt.xlabel("Average Queue Length")
+plt.xlabel("Max Queue Length")
 plt.ylabel("Average Travel Time")
 plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
 plt.grid(True)
