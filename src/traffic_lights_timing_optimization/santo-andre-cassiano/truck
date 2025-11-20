@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2025-11-20 11:32:49 by Eclipse SUMO GUI Version 1.24.0
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="C:\Users\pacot\Desktop\Tempos do Cassiano\network.net.xml"/>
+        <route-files value="C:\Users\pacot\Desktop\Tempos do Cassiano\demand.rou.xml"/>
+        <additional-files value="C:\Users\pacot\Desktop\Tempos do Cassiano\demand.add.xml"/>
+    </input>
+
+</sumoConfiguration>
+-->
+
+<e3Detector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/det_e3_file.xsd">
+   <interval begin="0.00" end="3916.00" id="e3_11" meanTravelTime="0.06" meanOverlapTravelTime="0.52" meanSpeed="15.48" meanHaltsPerVehicle="0.00" meanTimeLoss="0.02" vehicleSum="52" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+   <interval begin="0.00" end="3916.00" id="e3_3" meanTravelTime="0.32" meanOverlapTravelTime="0.78" meanSpeed="15.21" meanHaltsPerVehicle="0.00" meanTimeLoss="0.06" vehicleSum="67" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+   <interval begin="0.00" end="3916.00" id="e3_8" meanTravelTime="0.09" meanOverlapTravelTime="0.78" meanSpeed="10.40" meanHaltsPerVehicle="0.00" meanTimeLoss="0.01" vehicleSum="11" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+</e3Detector>
