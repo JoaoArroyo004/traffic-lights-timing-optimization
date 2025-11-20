@@ -1,12 +1,18 @@
+import os
+import tempfile
+import shutil
+from pathlib import Path
+import threading
 import traci
 
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 
 SOFT_INF = 1_000
 INF = 100_000_00
+
 LAST_VEHICLE_SPAWN = 3600.00 # TODO: automate this
-TIME_LIMIT = 10 * LAST_VEHICLE_SPAWN
-SIMULATION_TIME = 1_800 # How much time each simulation runs
+SIMULATION_TIME = 900 # Time of last spawned vehicle which we wait to reach its destination
+TIME_LIMIT = 5 * SIMULATION_TIME
 MAX_DEADLOCK = 200 # If no vehicle reaches a destination in a 200 consecutive step cout, halt.
 
 def simulation_ended():
@@ -31,6 +37,9 @@ def calculate_last_greens(green_times: list[float], semaphores_original_informat
     Given the green times, the semaphore original information and cycle time, returns the time
     for each last green. If it is not positive, return [-1]
     """
+    print(f"[DBG] check semaphore info: {semaphores_original_information}")
+    print(f"[DBG] check green_times: {green_times}")
+    
     currGreen: int = 0
     times_for_last_green: list[float] = []
     foundInvalid: bool = False
@@ -44,6 +53,7 @@ def calculate_last_greens(green_times: list[float], semaphores_original_informat
                 time_sum += semaphores_original_information[s_id][p_id][1]
         
         last_green_time: float = cycle_time - time_sum
+        print(f"[DBG] last_green_time = {last_green_time}")
         if last_green_time <= 0:            
             foundInvalid = True
             break
@@ -66,16 +76,11 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
     """
     Evaluates a traffic light policy by adjusting the green phase durations and offsets    
     """        
-    print("-------------------\n-------------------")
-    print(f"[DBG] Simulate with the following policy:\n")
-    print(f"Offsets:\n {offsets}")
-    print(f"Green times:\n {green_times}")
+    tmp_dir = tempfile.mkdtemp(prefix="sumo_sim_")
+    cfg_path = Path(tmp_dir) / "traffic.sumocfg"    
+    shutil.copy(path, cfg_path) # Copy original simulation config & all referenced files
     
-    print("-------------------\n-------------------")    
-    
-    
-    operationMode = "sumo-gui" if gui else "sumo" # SUMO with GUI ONLY for debugging
-    port = traci.getFreeSocketPort()
+    operationMode = "sumo-gui" if gui else "sumo" # SUMO with GUI ONLY for debugging    
     sumoCmd = [
         operationMode,
         "-c", path,
@@ -84,32 +89,27 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         "--start",          # start simulation immediately (skip GUI pause)
         "--time-to-teleport", "-1",  # disable teleportation
         "--waiting-time-memory", "1000",  # longer waiting-time window
+        "--tripinfo-output", str(Path(tmp_dir) / "tripinfo.xml"),
+        "--vehroute-output", str(Path(tmp_dir) / "routes.xml")
     ]
+    
+    port = traci.getFreeSocketPort()
+    print(f"[DBG] Starting SUMO | PID={os.getpid()} TID={threading.get_ident()} port={port} tmp_dir={tmp_dir}")
     traci.start(sumoCmd, port=port)    
     if verbose:
         print("[INFO] Connection stablished")
 
     try:
         tls_ids = traci.trafficlight.getIDList()
-        
-        print(f"[DBG] Check current phase plan")
-        for s_id, tls_id in enumerate(tls_ids):
-            logic = traci.trafficlight.getCompleteRedYellowGreenDefinition(tls_id)[0]                    
-            print(f"For semaphore {s_id}")
-            for p_id, phase in enumerate(logic.phases):
-                print(f"Phase {p_id} = {phase.state}")
-        
-                        
+                                
         print(f"[DBG]Assign new plan")
         currGreen = 0
         currlastGreen = 0
         for s_id, tls_id in enumerate(tls_ids):
             logic = traci.trafficlight.getCompleteRedYellowGreenDefinition(tls_id)[0]                    
         
-            new_phases = []
-            print(f"-- For semaphore id = {s_id}")
-            for p_id, phase in enumerate(logic.phases):
-                print(f"-- For phase id = {p_id}")
+            new_phases = []            
+            for p_id, phase in enumerate(logic.phases):                
                 if semaphores_original_information[s_id][p_id][0] == 'last_green':
                     new_duration = times_for_last_green[currlastGreen]
                     currlastGreen += 1
@@ -194,7 +194,8 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
             print(f"""[RESULTS]\nAvg waiting time: {avg_waiting_time:.2f}
                   \nMax per-edge queue length:     {max_queue_length}
                   \nAverage queue length:          {avg_queue_system:.2f}""")
-                    
+        
+        shutil.rmtree(tmp_dir)        
         return {"avg_travel_time": avg_waiting_time, 
                 "avg_queue_system": avg_queue_system,
                 "max_queue": max_queue_length,
@@ -203,6 +204,7 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
     except Exception as e:        
         print("[ERROR]", e)
         traci.close(False)
+        shutil.rmtree(tmp_dir)
         raise
 
 if __name__ == '__main__':                    

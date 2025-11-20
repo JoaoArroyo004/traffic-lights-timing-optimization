@@ -5,24 +5,24 @@ from pymoo.termination import get_termination
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
-from traffic_lights_timing_optimization.problem_definition import TrafficLightOptimization
+from traffic_lights_timing_optimization.problem_definition_sequential import TrafficLightOptimizationSequential
 
 CYCLE_TIME = 60
 # SUMO_CONFIG_PATH = "./traffic-light-benchmark/four_semaphores/traffic.sumocfg"
 SUMO_CONFIG_PATH = "./santo-andre-benchmark/demand.sumocfg"
 semaphores_information = fetch_graph_information(SUMO_CONFIG_PATH).copy()
 print(f"[DBG] semaphore information: {semaphores_information}")
-problem = TrafficLightOptimization(cycle_time=CYCLE_TIME, path=SUMO_CONFIG_PATH,
+problem = TrafficLightOptimizationSequential(cycle_time=CYCLE_TIME, path=SUMO_CONFIG_PATH,
                                    semaphores_information=semaphores_information)
 
 algorithm = NSGA2(
-    pop_size=5,
+    pop_size=4,
     crossover= SBX(prob=0.9, eta=20),
     mutation = PM(prob=0.1, eta=20),
     eliminate_duplicates=True
 )
 
-termination = get_termination("n_gen", 5)
+termination = get_termination("n_gen", 4)
 
 res = minimize(problem,
                algorithm,

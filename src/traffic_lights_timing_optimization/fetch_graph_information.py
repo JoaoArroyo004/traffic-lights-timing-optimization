@@ -52,7 +52,7 @@ def fetch_graph_information(path="./traffic-light-benchmark/four_semaphores/traf
             
             semaphores_information.append(semaphore_information)
 
-        print("[DBG] Simulation finished")        
+        print("[DBG] Information Fetched")        
         traci.close()
 
         return semaphores_information
