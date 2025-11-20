@@ -5,10 +5,8 @@ from pymoo.core.problem import Problem
 from traffic_lights_timing_optimization.evaluate_policy import evaluate_policy, calculate_last_greens
 
 INF = 100_000_00
-TIME_YELLOW = 5
-TIME_RED = 5
 
-class TrafficLightOptimization(Problem):
+class TrafficLightOptimizationSequential(Problem):
     # Convention: first len(semaphores_phases) are all offset variables. 
     # After, it follows based on the semaphore IDs.
     def __init__(self, cycle_time, semaphores_information, path):
@@ -59,16 +57,16 @@ class TrafficLightOptimization(Problem):
             calculated_last_greens: list[float] = calculate_last_greens(green_times=green_times, semaphores_original_information=self.semaphores_original_information,
                           cycle_time=self.cycle_time).copy()
             
-            with open("./logs.csv", "a", newline="") as f:
+            with open("./logs_sequential.csv", "a", newline="") as f:
                 writer = csv.writer(f)
 
                 offsets_fmt = [f"{float(x):.1f}" for x in offsets]
                 greens_fmt = [f"{float(x):.1f}" for x in green_times]                
                 last_greens_fmt = [f"{float(x):.1f}" for x in calculated_last_greens]
                 
-                writer.writerow(offsets_fmt)
-                writer.writerow(greens_fmt)
-                writer.writerow(last_greens_fmt)
+                writer.writerow(["OFFSETS:", offsets_fmt])
+                writer.writerow(["GREENS:", greens_fmt])
+                writer.writerow(["LAST_GREENS:", last_greens_fmt])
             
             if (calculated_last_greens[0] > 0):
                 metrics = evaluate_policy(offsets=offsets, 
@@ -88,13 +86,14 @@ class TrafficLightOptimization(Problem):
             # f1.append(metrics["max_queue"])            
             f2.append(metrics["avg_travel_time"])
             
-            with open("./logs.csv", "a", newline="") as f:
+            with open("./logs_sequential.csv", "a", newline="") as f:
                 writer = csv.writer(f)
 
-                avg_queue_fmt = f"{float(metrics['avg_queue_system']):.1f}"
-                avg_tt_fmt = f"{float(metrics['avg_travel_time']):.1f}"                
+                max_queue_fmt = f"{float(metrics['max_queue']):.2f}"
+                avg_queue_fmt = f"{float(metrics['avg_queue_system']):.2f}"
+                avg_tt_fmt = f"{float(metrics['avg_travel_time']):.2f}"
 
-                writer.writerow([avg_tt_fmt, avg_queue_fmt])
+                writer.writerow(["RESULTS:", avg_tt_fmt, avg_queue_fmt, max_queue_fmt])
                 writer.writerow([])
 
         out["F"] = np.column_stack([f1, f2])
