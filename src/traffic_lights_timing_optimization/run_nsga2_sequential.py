@@ -41,7 +41,7 @@ F = res.F
 plt.figure(figsize=(6, 5))
 plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
 plt.xlabel("Average Queue Length")
-plt.ylabel("Average Travel Time")
+plt.ylabel("Average Waiting Time")
 plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
 plt.grid(True)
 plt.show()

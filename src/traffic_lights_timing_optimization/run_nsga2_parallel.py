@@ -1,13 +1,17 @@
+import time
 import matplotlib.pyplot as plt
 from pymoo.algorithms.moo.nsga2 import NSGA2
 from pymoo.optimize import minimize
 from pymoo.termination import get_termination
 from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
+from traffic_lights_timing_optimization.callback_logger import LogGenerationCallback
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 from traffic_lights_timing_optimization.problem_definition_parallel import TrafficLightOptimizationParallel
 import multiprocessing
 from pymoo.core.problem import StarmapParallelization
+
+start_time = time.time()
 
 manager = multiprocessing.Manager()
 shared_cache = manager.dict()
@@ -28,20 +32,26 @@ problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=SUMO_CONF
                                     tolerance=0.5)
 
 algorithm = NSGA2(
-    pop_size=10,
+    pop_size=30,
     crossover= SBX(prob=0.9, eta=20),
     mutation = PM(prob=0.1, eta=20),
     eliminate_duplicates=True
 )
 
-termination = get_termination("n_gen", 10)
-
+termination = get_termination("n_gen", 50)
+callback = LogGenerationCallback()
 res = minimize(problem,
                algorithm,
                termination,
                seed=1,
-               verbose=True)
+               callback = LogGenerationCallback(),
+               verbose=False)
 pool.close()
+
+elapsed_time = time.time() - start_time
+print(f"Total execution time: {elapsed_time:.2f} seconds")
+print(f"Total execution time: {elapsed_time/60:.2f} minutes")
+
 
 # --- PARETO PLOT ---
 print("\n=== Pareto Front Solutions (Objective Values) ===")
@@ -54,7 +64,7 @@ F = res.F
 plt.figure(figsize=(6, 5))
 plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
 plt.xlabel("Max Queue Length")
-plt.ylabel("Average Travel Time")
+plt.ylabel("Average Waiting Time")
 plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
 plt.grid(True)
 plt.show()

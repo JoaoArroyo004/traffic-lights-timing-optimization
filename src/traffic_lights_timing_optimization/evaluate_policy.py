@@ -117,11 +117,10 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
             if verbose:
                 print(f"[INFO] Phase offset applied: {offset_time:.2f} seconds")
 
-        
         print("[DBG] Custom program applied successfully.\n Start simulation")        
         step: int = 0
         total_waiting_time: float = 0.0
-        total_arrivals: int = 0
+        total_vehicles_through_system: int = 0
         max_queue_length: int = 0
         graphEdges = traci.edge.getIDList()
         sum_queues: float = 0.0        
@@ -131,16 +130,17 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         tracked_waiting_times = {} 
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() <= SIMULATION_TIME:
             traci.simulationStep()
-            total_arrivals += traci.simulation.getArrivedNumber()
+            total_vehicles_through_system += len(traci.simulation.getDepartedIDList())
             
+            # Calculates sum of waiting times:
             for vid in traci.vehicle.getIDList():
-                tracked_waiting_times[vid] = traci.vehicle.getAccumulatedWaitingTime(vid)
-                
-            for vid in traci.simulation.getArrivedIDList():
                 if vid in tracked_waiting_times:
-                    total_waiting_time += tracked_waiting_times.pop(vid)
-                else:
-                    print(f"[ERROR] Unkown vehicle: {vid}")
+                    total_waiting_time += traci.vehicle.getAccumulatedWaitingTime(vid) - tracked_waiting_times[vid]
+                    
+                tracked_waiting_times[vid] = traci.vehicle.getAccumulatedWaitingTime(vid)
+
+            for vid in traci.simulation.getArrivedIDList():
+                tracked_waiting_times.pop(vid)                
             
             queue_lengths = []
             for edge in graphEdges:
@@ -156,20 +156,20 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
 
             step_max_queue = max(queue_lengths) if queue_lengths else 0
             if step_max_queue > max_queue_length:
-                max_queue_length = step_max_queue                                    
-            
+                max_queue_length = step_max_queue
+
             new_arrival_count = traci.simulation.getArrivedNumber()
             if new_arrival_count == last_arrival_count:
                 consecutive_steps_no_arrival += 1
             else:
                 consecutive_steps_no_arrival = 0
                 last_arrival_count = new_arrival_count
-                
+
             if (consecutive_steps_no_arrival >= MAX_DEADLOCK):
                 halted_simulation = True
                 break
             step += 1
-        
+
         if (not halted_simulation):
             print("[DBG] Simulation finished")        
         else:
@@ -185,7 +185,7 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
             }
 
         avg_queue_system = sum_queues / step        
-        avg_waiting_time = total_waiting_time / max(1, total_arrivals)
+        avg_waiting_time = total_waiting_time / max(1, total_vehicles_through_system)
         if verbose:
             print(f"""[RESULTS]\nAvg waiting time: {avg_waiting_time:.2f}
                   \nMax per-edge queue length:     {max_queue_length}

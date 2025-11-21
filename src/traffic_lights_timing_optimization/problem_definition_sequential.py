@@ -48,7 +48,7 @@ class TrafficLightOptimizationSequential(Problem):
     def _evaluate(self, X, out, *args, **kwargs):
         # X: matrix of shape (population_size, n_var)
         f1 = []  # max queue length
-        f2 = []  # avg travel time
+        f2 = []  # avg waiting time
 
         for solution in X:
             offsets = solution[:self.n_lights]

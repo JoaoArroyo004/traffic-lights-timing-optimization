@@ -1,7 +1,9 @@
-import os
+
 import csv
-import threading
 import numpy as np
+import os
+import threading
+
 # from pymoo.core.problem import Problem
 from pymoo.core.problem import ElementwiseProblem
 
@@ -115,4 +117,3 @@ class TrafficLightOptimizationParallel(ElementwiseProblem):
             writer.writerow([])
         
         out["F"] = [f1, f2]
-    
