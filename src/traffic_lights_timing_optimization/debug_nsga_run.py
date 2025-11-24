@@ -1,4 +1,5 @@
 from traffic_lights_timing_optimization.evaluate_policy import evaluate_policy
+from traffic_lights_timing_optimization.evaluate_std_policy import evaluate_std_policy
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 
 if __name__ == '__main__':                    
@@ -6,9 +7,9 @@ if __name__ == '__main__':
     semaphores_information = fetch_graph_information(SUMO_CFG_PATH).copy()
     cycle_time = 60
 
-    offsets = [21.37, 31.45, 40.83]
-    green_times = [8.28, 45.91, 3.13, 52.58]
-    calculated_last_greens = [52.22, 17.96, 16.42]
+    offsets = [69.52, 52.61, 50.79]
+    green_times = [56.80, 46.18, 1.27, 54.09]
+    calculated_last_greens = [3.70, 19.55, 14.91]
     # offsets = [46.08, 23.85, 24.18]
     # green_times = [24.33, 45.33, 3.05, 56.04]
     # calculated_last_greens = [36.17, 18.62, 12.96]
@@ -21,3 +22,7 @@ if __name__ == '__main__':
         gui=True,
         verbose=True,
         path=SUMO_CFG_PATH)
+    
+    # evaluate_std_policy(gui=True,
+    #     verbose=True,
+    #     path=SUMO_CFG_PATH)
