@@ -131,8 +131,7 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() <= SIMULATION_TIME:
             traci.simulationStep()
             total_vehicles_through_system += len(traci.simulation.getDepartedIDList())
-            
-            # Calculates sum of waiting times:
+
             for vid in traci.vehicle.getIDList():
                 if vid in tracked_waiting_times:
                     total_waiting_time += traci.vehicle.getAccumulatedWaitingTime(vid) - tracked_waiting_times[vid]
@@ -140,8 +139,8 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
                 tracked_waiting_times[vid] = traci.vehicle.getAccumulatedWaitingTime(vid)
 
             for vid in traci.simulation.getArrivedIDList():
-                tracked_waiting_times.pop(vid)                
-            
+                tracked_waiting_times.pop(vid)
+
             queue_lengths = []
             for edge in graphEdges:
                 halting = traci.edge.getLastStepHaltingNumber(edge)
