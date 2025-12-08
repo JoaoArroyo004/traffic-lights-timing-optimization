@@ -12,21 +12,21 @@ from traffic_lights_timing_optimization.problem_definition_parallel import Traff
 import multiprocessing
 from pymoo.core.problem import StarmapParallelization
 
+CYCLE_TIME = 75
+SUMO_CONFIG_PATH = "./santo-andre-extendido/demand.sumocfg"
 
-def optimize():
+def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH):
     start_time = time.time()
 
     manager = multiprocessing.Manager()
     shared_cache = manager.dict()
-    CYCLE_TIME = 75
-    SUMO_CONFIG_PATH = "./santo-andre-extendido/demand.sumocfg"
-    semaphores_information = fetch_graph_information(SUMO_CONFIG_PATH).copy()
+    semaphores_information = fetch_graph_information(input_file).copy()
     print(f"[DBG] semaphore information: {semaphores_information}")
 
     n_proccess = 4
     pool = multiprocessing.Pool(n_proccess)
     runner = StarmapParallelization(pool.starmap)
-    problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=SUMO_CONFIG_PATH,
+    problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=input_file,
                                     semaphores_information=semaphores_information,
                                         elementwise_runner=runner,
                                         elementwise_evaluation=True,
@@ -34,13 +34,13 @@ def optimize():
                                         tolerance=0.5)
 
     algorithm = NSGA2(
-        pop_size=30,
+        pop_size=pop_size,
         crossover= SBX(prob=0.9, eta=20),
         mutation = PM(prob=0.1, eta=20),
         eliminate_duplicates=True
     )
 
-    termination = get_termination("n_gen", 50)        
+    termination = get_termination("n_gen", n_gen)        
     seed = random.randint(0, 2**32 - 1)
     with open("seed.txt", "w") as f:
         f.write(str(seed))
@@ -74,3 +74,5 @@ def optimize():
     plt.grid(True)
     plt.savefig("pareto_front.png", dpi=300, bbox_inches="tight")
     plt.close()
+
+    return res

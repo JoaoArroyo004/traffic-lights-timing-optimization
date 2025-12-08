@@ -26,6 +26,10 @@ pip-wheel-metadata/
 share/python-wheels/
 MANIFEST
 
+experiment_ID1
+experiment_ID2
+
+
 # Virtual environments
 .venv/
 venv/

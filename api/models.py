@@ -2,7 +2,7 @@ from typing import Optional
 from datetime import datetime
 from sqlmodel import SQLModel, Field
 
-class Simulation(SQLModel, table=True):
+class Scenario(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     sim_type: str

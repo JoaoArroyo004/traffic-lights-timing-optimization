@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, create_engine, Session
 
-SQL_FILE_NAME = "simulations.db"
+SQL_FILE_NAME = "database.db"
 SQLITE_URL = f"sqlite:///{SQL_FILE_NAME}"
 
 engine = create_engine(SQLITE_URL, echo=True)

@@ -54,4 +54,4 @@ def run_experiment(amount_runs):
 
 
 if __name__ == '__main__':
-    run_experiment(amount_runs=3)
+    run_experiment(amount_runs=1)
