@@ -10,7 +10,7 @@ from traffic_lights_timing_optimization.fetch_graph_information import fetch_gra
 SOFT_INF = 1_000
 INF = 100_000_00
 
-SIMULATION_TIME = 100 # SIMULATION TIME
+SIMULATION_TIME = 400 # SIMULATION TIME
 MAX_DEADLOCK = 200 # If no vehicle reaches a destination in a 200 consecutive step cout, halt.
 
 def calculate_last_greens(green_times: list[float], semaphores_original_information: list[list[tuple[str,int]]],

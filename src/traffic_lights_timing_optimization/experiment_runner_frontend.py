@@ -3,7 +3,10 @@ from traffic_lights_timing_optimization.run_nsga2_parallel import optimize
 import os
 import shutil
 import argparse
+import numpy as np
+import matplotlib.pyplot as plt
 from pathlib import Path
+from traffic_lights_timing_optimization.evaluate_std_policy import evaluate_std_policy
 
 API_RELATIVE_PATH = Path("./")
 
@@ -171,13 +174,20 @@ def run_experiment(args):
     print(f"Diretorio atual: {os.getcwd()}")
 
     # Run optimization and get results
-    res = optimize(pop_size=args.population, n_gen=args.generation, input_file=input_file)
+    res = optimize(pop_size=args.population, n_gen=args.generation, input_file=input_file, plot_pareto=False)
     F = res.F
+    
+    
+    F = np.array(F)
+    F_rounded = np.round(F, 2)
+    unique = np.unique(F_rounded, axis=0)
+
 
     # Get best solutions from CSVs and save to a new CSV
-    solutions = get_best_solutions(F, "./logs_parallel")
+    solutions = get_best_solutions(unique, "./logs_parallel")
     delete_all_csv("./logs_parallel")
     save_solutions_to_csv(solutions, "logs_parallel/solutions.csv")
+
 
     #Create a new run directory
     output_folder = API_RELATIVE_PATH / args.output_folder
@@ -190,9 +200,39 @@ def run_experiment(args):
         except:
             pass
 
+
+    # Evaluate traditional policy
+    # if not (API_RELATIVE_PATH / args.output_folder / 'Run_0').exists():
+    res_t = evaluate_std_policy(gui=False,
+        verbose=False,
+        path=input_file)
+
+    avg_wait = res_t['avg_waiting_time']
+    avg_queue = res_t['avg_queue_system']
+    max_queue = res_t['max_queue']
+
+    create_directory(API_RELATIVE_PATH / args.output_folder / 'Run_0')
+    with open(API_RELATIVE_PATH / args.output_folder / 'Run_0' / "traditional.csv", "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["RESULTS:", round(avg_wait, 2), round(avg_queue, 2), round(max_queue, 2)])
+
+
     next_index = max(indices) + 1 if indices else 1
     curr_dir = output_folder / f'Run_{next_index}'
     create_directory(curr_dir)
+
+
+    # Plot Pareto front
+    plt.figure(figsize=(6, 5))
+    plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
+    plt.scatter(max_queue, avg_wait, color="red", alpha=0.7)
+    plt.xlabel("Max Queue Length")
+    plt.ylabel("Average Waiting Time")
+    plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
+    plt.grid(True)
+    plt.savefig("pareto_front.png", dpi=300, bbox_inches="tight")
+    plt.close()
+
 
     # Move results to the new run directory
     move_all_files('./logs_parallel', curr_dir)

@@ -64,9 +64,11 @@ def get_scenario_by_id(scenario_id: int, session: Session = Depends(get_session)
     runs_folder = EXTRACT_DIR / sim.name / "Runs"
 
     runs = get_runs_data(runs_folder)
+    traditonal_policy_results = get_traditional_policy_results(runs_folder / "Run_0")
     data = {
         "name": sim.name,
-        "n_runs": len(list(runs_folder.iterdir())) if runs_folder.exists() else 0,
+        "n_runs": len(list(runs_folder.iterdir()))-1 if runs_folder.exists() else 0,
+        "traditional_policy_results": traditonal_policy_results,
         "runs": runs
     }
     return data
@@ -305,8 +307,12 @@ def get_runs_data(runs_folder: Path) -> List[Dict]:
     if not runs_folder.exists():
         return runs
 
+    # Se o nome não for um diretório ou seu nome for Runs_0, ignore
     for run_dir in sorted(runs_folder.iterdir()):
-        if not run_dir.is_dir():
+        if (not run_dir.is_dir()):
+            continue
+
+        if run_dir.name == "Run_0":
             continue
 
         # ---- IMAGEM ----
@@ -330,6 +336,36 @@ def get_runs_data(runs_folder: Path) -> List[Dict]:
         runs.append(run_data)
 
     return runs
+
+def get_traditional_policy_results(runs_folder: Path) -> Dict:
+    results = {}
+    csv_path = runs_folder / "traditional.csv"
+
+    print(csv_path)
+
+    if not runs_folder.exists():
+        return results
+    
+    if not csv_path.exists():
+        return results
+
+    with csv_path.open("r", encoding="utf-8") as f:
+        #There is only one row following the formate: ["RESULTS:", avg_wait, avg_queue, max_queue]
+        reader = csv.reader(f)
+        for row in reader:
+            if not row:
+                continue
+            
+            key = row[0].strip()
+            if key == "RESULTS:":
+                nums = [float(x) for x in row[1:] if x != ""]
+                if len(nums) >= 3:
+                    results = {
+                        "avg_wait": nums[0],
+                        "avg_queue": nums[1],
+                        "max_queue": nums[2],
+                    }
+    return results
 
 
 # Get solutions from CSV file

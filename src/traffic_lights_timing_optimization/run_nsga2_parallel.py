@@ -15,7 +15,7 @@ from pymoo.core.problem import StarmapParallelization
 CYCLE_TIME = 75
 SUMO_CONFIG_PATH = "./santo-andre-extendido/demand.sumocfg"
 
-def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH):
+def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH, plot_pareto: bool=True):
     start_time = time.time()
 
     manager = multiprocessing.Manager()
@@ -65,14 +65,15 @@ def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH):
     print("\n=== Example Decision Variables (First solution) ===")
     print(res.X[0])
 
-    F = res.F
-    plt.figure(figsize=(6, 5))
-    plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
-    plt.xlabel("Max Queue Length")
-    plt.ylabel("Average Waiting Time")
-    plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
-    plt.grid(True)
-    plt.savefig("pareto_front.png", dpi=300, bbox_inches="tight")
-    plt.close()
+    if plot_pareto:
+        F = res.F
+        plt.figure(figsize=(6, 5))
+        plt.scatter(F[:, 0], F[:, 1], color="blue", alpha=0.7)
+        plt.xlabel("Max Queue Length")
+        plt.ylabel("Average Waiting Time")
+        plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
+        plt.grid(True)
+        plt.savefig("pareto_front.png", dpi=300, bbox_inches="tight")
+        plt.close()
 
     return res
