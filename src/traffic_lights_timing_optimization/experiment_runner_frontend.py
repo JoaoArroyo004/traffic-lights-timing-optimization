@@ -4,13 +4,11 @@ import os
 import shutil
 import argparse
 from pathlib import Path
-from traffic_lights_timing_optimization.evaluate_policy import calculate_last_greens
 
 API_RELATIVE_PATH = Path("./")
 
 import csv
 import ast
-import math
 
 
 def get_best_solutions(res_F, csv_folder, ndigits=2):

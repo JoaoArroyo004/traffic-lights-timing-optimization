@@ -4,19 +4,31 @@ from pathlib import Path
 from database import create_db_and_tables, get_session
 from sqlmodel import Session, select
 from models import Scenario
-import zipfile, subprocess, io, uvicorn, shutil
+from pydantic import BaseModel
+from typing import List, Optional, Dict
+import zipfile, subprocess, io, uvicorn, shutil, json, csv, ast, base64
 
 
 
 EXTRACT_DIR = Path("extracted")
 EXTRACT_DIR.mkdir(exist_ok=True)
-
-app = FastAPI()
-
 ORIGINS = [
     "http://localhost:3000",
     "http://127.0.0.1:3000",
 ]
+
+
+
+app = FastAPI()
+
+
+
+class SimulationParams(BaseModel):
+    offsets: List[float]
+    greens: List[float]
+    last_greens: List[float]
+
+
 
 # CORS configuration: it's necessary to allow sending responses to the front end
 app.add_middleware(
@@ -27,9 +39,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+
 @app.on_event("startup")
 def on_startup():
     create_db_and_tables()
+
 
 
 @app.get("/scenarios", response_model=list[Scenario])
@@ -42,9 +57,19 @@ def get_scenarios(session: Session = Depends(get_session)):
 @app.get("/scenarios/{scenario_id}")
 def get_scenario_by_id(scenario_id: int, session: Session = Depends(get_session)):
     sim = session.get(Scenario, scenario_id)
+
     if not sim:
         raise HTTPException(status_code=404, detail="Scenario not found")
-    return sim
+
+    runs_folder = EXTRACT_DIR / sim.name / "Runs"
+
+    runs = get_runs_data(runs_folder)
+    data = {
+        "name": sim.name,
+        "n_runs": len(list(runs_folder.iterdir())) if runs_folder.exists() else 0,
+        "runs": runs
+    }
+    return data
 
 
 
@@ -55,6 +80,7 @@ def create_scenario_endpoint(name: str = Form(...), sim_type: str = Form(...), s
 
 
 
+# Update scenario status and execution time
 @app.put("/scenarios/update/{scenario_id}", response_model=Scenario)
 def update_scenario(scenario_id: int, status: str = None, execution_time: float = None, session: Session = Depends(get_session)):
     sim = session.get(Scenario, scenario_id)
@@ -75,6 +101,7 @@ def update_scenario(scenario_id: int, status: str = None, execution_time: float 
 
 
 
+# Delete a scenario by ID
 @app.delete("/scenarios/remove/{scenario_id}")
 def delete_scenario(scenario_id: int, session: Session = Depends(get_session)):
     sim = session.get(Scenario, scenario_id)
@@ -105,7 +132,7 @@ async def upload_scenario_file(
     # Validate file type and scenario type
     if not file.filename.endswith('.zip'):
         raise HTTPException(status_code=400, detail="Only .zip files are accepted")
-    elif sim_type not in ["default", "optimized"]:
+    elif sim_type not in ["Multi-Objective GA"]:
         raise HTTPException(status_code=400, detail="Invalid scenario type")
     
     zip_content = await file.read()
@@ -131,6 +158,8 @@ async def upload_scenario_file(
     return {"files_extracted": extracted_files}
 
 
+
+# Optimize scenario for a given scenario
 @app.post("/scenarios/optmize/{scenario_id}")
 def optimize_scenario(scenario_id: int,
                       population: int = 1, 
@@ -150,30 +179,103 @@ def optimize_scenario(scenario_id: int,
     return {"msg": f"Optimization for scenario {sim.name} started with population {population} and generation {generation}."}
 
 
+
+# Start simulation for a given scenario
 @app.post("/scenarios/simulate/{scenario_id}")
 def start_scenario(scenario_id: int, 
+                   params: SimulationParams,
+                   case: str = "default",
                    gui: bool = False, 
                    verbose: bool = False, 
                    session: Session = Depends(get_session)):
+    
     sim = session.get(Scenario, scenario_id)
     if not sim:
         raise HTTPException(status_code=404, detail="Scenario not found")
 
     folder_name = EXTRACT_DIR / sim.name
-    #Call the scenario script based on sim_type
-    if sim.sim_type == "default":
-        print("Processing default scenario...")
-        subprocess.Popen(["python3", "../src/traffic_lights_timing_optimization/count.py"])
-        # subprocess.Popen(["python3", "count.py"])
-
-        #TODO: Call the default scenario script here
-    elif sim.sim_type == "optimized":
-        print("Processing optimized scenario...")
-        #TODO: Call the optimized scenario script here
-    else:
-        raise HTTPException(status_code=400, detail="Unknown scenario type")
     
-    return {"msg": f"Scenario {sim.name} of type {sim.sim_type} started."}
+    #Call the scenario script based on sim_type
+    if case == "optimized":
+        print("Processing optimized scenario...")
+        cmd = [
+            "poetry", "run", "python",
+            "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
+            "--case", str(case),
+            "--offsets", json.dumps(params.offsets),
+            "--greens", json.dumps(params.greens),
+            "--last_greens", json.dumps(params.last_greens),
+            "--input_folder", str(folder_name / "Files")
+        ]
+
+        if gui:
+            cmd.append("--gui")
+        if verbose:
+            cmd.append("--verbose")
+
+        subprocess.Popen(cmd)
+
+
+    elif case == "default":
+        print("Processing default scenario...")
+        cmd = [
+            "poetry", "run", "python",
+            "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
+            "--case", str(case),
+            "--input_folder", str(folder_name / "Files")
+        ]
+
+        if gui:
+            cmd.append("--gui")
+
+        if verbose:
+            cmd.append("--verbose")
+
+        subprocess.Popen(cmd)
+    
+    elif case == "both":
+        print("Processing both scenarios...")
+
+        # Default case
+        cmd_default = [
+            "poetry", "run", "python",
+            "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
+            "--case", "default",
+            "--input_folder", str(folder_name / "Files")
+        ]
+
+        if gui:
+            cmd_default.append("--gui")
+
+        if verbose:
+            cmd_default.append("--verbose")
+
+        subprocess.Popen(cmd_default)
+
+        # Optimized case
+        cmd_optimized = [
+            "poetry", "run", "python",
+            "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
+            "--case", "optimized",
+            "--offsets", json.dumps(params.offsets),
+            "--greens", json.dumps(params.greens),
+            "--last_greens", json.dumps(params.last_greens),
+            "--input_folder", str(folder_name / "Files")
+        ]
+
+        if gui:
+            cmd_optimized.append("--gui")
+        if verbose:
+            cmd_optimized.append("--verbose")
+
+        subprocess.Popen(cmd_optimized)
+
+
+    else:
+        raise HTTPException(status_code=400, detail="Unknown case type")
+    
+    return {"msg": f"Scenario {sim.name} of type {case} started."}
+
 
 
 def create_scenario(name: str, sim_type: str, session: Session):
@@ -195,3 +297,81 @@ def get_unique_folder(base_path: Path) -> Path:
         if not new_path.exists():
             return new_path
         i += 1
+
+
+
+def get_runs_data(runs_folder: Path) -> List[Dict]:
+    runs: List[Dict] = []
+    if not runs_folder.exists():
+        return runs
+
+    for run_dir in sorted(runs_folder.iterdir()):
+        if not run_dir.is_dir():
+            continue
+
+        # ---- IMAGEM ----
+        img_path = run_dir / "pareto_front.png"
+        img = None
+        if img_path.exists():
+            with img_path.open("rb") as f:
+                encoded = base64.b64encode(f.read()).decode("utf-8")
+                img = f"data:image/png;base64,{encoded}"
+
+        # ---- SOLUÇÕES ----
+        csv_path = run_dir / "solutions.csv"
+        solutions = parse_solutions_csv(csv_path)
+
+        run_data = {
+            "run_name": run_dir.name,
+            "image": img,
+            "solutions": solutions,
+        }
+
+        runs.append(run_data)
+
+    return runs
+
+
+# Get solutions from CSV file
+def parse_solutions_csv(csv_path: Path) -> List[Dict]:
+    solutions = []
+    if not csv_path.exists():
+        return solutions
+
+    offsets = greens = last_greens = None
+
+    with csv_path.open("r", encoding="utf-8") as f:
+        reader = csv.reader(f)
+
+        for row in reader:
+            if not row:
+                continue
+
+            key = row[0].strip()
+
+            if key == "OFFSETS":
+                offsets = ast.literal_eval(row[1])
+
+            elif key == "GREENS":
+                greens = ast.literal_eval(row[1])
+
+            elif key == "LAST_GREENS":
+                last_greens = ast.literal_eval(row[1])
+
+            elif key.startswith("RESULTS"):
+                nums = [float(x) for x in row[1:] if x != ""]
+                if len(nums) >= 2:
+                    solution = {
+                        "offsets": offsets,
+                        "greens": greens,
+                        "last_greens": last_greens,
+                        "avg_wait": nums[0],
+                        "avg_queue": nums[1],
+                        "max_queue": nums[2],
+                    }
+                    solutions.append(solution)
+
+                # Reset to prepare for next block
+                offsets = greens = last_greens = None
+
+    return solutions
