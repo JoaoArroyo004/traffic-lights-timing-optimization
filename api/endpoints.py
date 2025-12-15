@@ -164,7 +164,9 @@ async def upload_scenario_file(
 # Optimize scenario for a given scenario
 @app.post("/scenarios/optmize/{scenario_id}")
 def optimize_scenario(scenario_id: int,
-                      population: int = 1, 
+                      simulation_time:int,
+                      cycle_time:int = 75,
+                      population: int = 1,
                       generation: int = 1,
                       session: Session = Depends(get_session)):
     
@@ -176,6 +178,8 @@ def optimize_scenario(scenario_id: int,
     subprocess.Popen(["poetry", "run", "python", "../src/traffic_lights_timing_optimization/experiment_runner_frontend.py",
                       "--population", str(population),
                         "--generation", str(generation),
+                        "--cycle_time", str(cycle_time),
+                        "--simulation_time", str(simulation_time),
                         "--input_folder", str(folder_name / "Files"),
                         "--output_folder", str(folder_name / "Runs")])
     return {"msg": f"Optimization for scenario {sim.name} started with population {population} and generation {generation}."}
@@ -186,6 +190,8 @@ def optimize_scenario(scenario_id: int,
 @app.post("/scenarios/simulate/{scenario_id}")
 def start_scenario(scenario_id: int, 
                    params: SimulationParams,
+                   simulation_time:int,
+                   cycle_time:int = 75,
                    case: str = "default",
                    gui: bool = False, 
                    verbose: bool = False, 
@@ -205,6 +211,8 @@ def start_scenario(scenario_id: int,
             "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
             "--case", str(case),
             "--offsets", json.dumps(params.offsets),
+            "--simulation_time", str(simulation_time),
+            "--cycle_time", str(cycle_time),
             "--greens", json.dumps(params.greens),
             "--last_greens", json.dumps(params.last_greens),
             "--input_folder", str(folder_name / "Files")
@@ -224,6 +232,7 @@ def start_scenario(scenario_id: int,
             "poetry", "run", "python",
             "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
             "--case", str(case),
+            "--simulation_time", str(simulation_time),
             "--input_folder", str(folder_name / "Files")
         ]
 
@@ -243,6 +252,7 @@ def start_scenario(scenario_id: int,
             "poetry", "run", "python",
             "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
             "--case", "default",
+            "--simulation_time", str(simulation_time),
             "--input_folder", str(folder_name / "Files")
         ]
 
@@ -259,6 +269,8 @@ def start_scenario(scenario_id: int,
             "poetry", "run", "python",
             "../src/traffic_lights_timing_optimization/debug_nsga_run_frontend.py",
             "--case", "optimized",
+            "--simulation_time", str(simulation_time),
+            "--cycle_time", str(cycle_time),
             "--offsets", json.dumps(params.offsets),
             "--greens", json.dumps(params.greens),
             "--last_greens", json.dumps(params.last_greens),

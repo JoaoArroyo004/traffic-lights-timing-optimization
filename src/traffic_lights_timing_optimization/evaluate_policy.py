@@ -53,7 +53,7 @@ def calculate_last_greens(green_times: list[float], semaphores_original_informat
     print(f"[DBG] Check calculated last_greens:\n {times_for_last_green}")
     return times_for_last_green
 
-def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_original_information, cycle_time, gui=False, verbose=False,
+def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_original_information, cycle_time, simulation_time=SIMULATION_TIME, gui=False, verbose=False,
                     path="./traffic-light-benchmark/four_semaphores/traffic.sumocfg"):
     """
     Evaluates a traffic light policy by adjusting the green phase durations and offsets    
@@ -128,7 +128,7 @@ def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_origi
         consecutive_steps_no_arrival = 0
         halted_simulation = False       
         tracked_waiting_times = {} 
-        while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() <= SIMULATION_TIME:
+        while traci.simulation.getMinExpectedNumber() > 0 and traci.simulation.getTime() <= simulation_time:
             traci.simulationStep()
             total_vehicles_through_system += len(traci.simulation.getDepartedIDList())
 

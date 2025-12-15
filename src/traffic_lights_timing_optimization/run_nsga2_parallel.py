@@ -13,9 +13,10 @@ import multiprocessing
 from pymoo.core.problem import StarmapParallelization
 
 CYCLE_TIME = 75
+SIMULATION_TIME = 1800
 SUMO_CONFIG_PATH = "./santo-andre-extendido/demand.sumocfg"
 
-def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH, plot_pareto: bool=True):
+def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH, simulation_time=SIMULATION_TIME, cycle_time=CYCLE_TIME, plot_pareto: bool=True):
     start_time = time.time()
 
     manager = multiprocessing.Manager()
@@ -26,8 +27,9 @@ def optimize(pop_size: int=30, n_gen: int=50, input_file=SUMO_CONFIG_PATH, plot_
     n_proccess = 4
     pool = multiprocessing.Pool(n_proccess)
     runner = StarmapParallelization(pool.starmap)
-    problem = TrafficLightOptimizationParallel(cycle_time=CYCLE_TIME, path=input_file,
-                                    semaphores_information=semaphores_information,
+    problem = TrafficLightOptimizationParallel(cycle_time=cycle_time, path=input_file,
+                                        simulation_time=simulation_time,
+                                        semaphores_information=semaphores_information,
                                         elementwise_runner=runner,
                                         elementwise_evaluation=True,
                                         shared_cache=shared_cache,

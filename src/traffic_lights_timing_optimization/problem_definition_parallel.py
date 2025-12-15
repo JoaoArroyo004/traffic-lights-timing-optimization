@@ -14,9 +14,10 @@ INF = 100_000_00
 class TrafficLightOptimizationParallel(ElementwiseProblem):
     # Convention: first len(semaphores_phases) are all offset variables. 
     # After, it follows based on the semaphore IDs.
-    def __init__(self, semaphores_information, path, elementwise_runner, shared_cache, tolerance,
+    def __init__(self, semaphores_information, simulation_time, path, elementwise_runner, shared_cache, tolerance,
                  cycle_time=60, elementwise_evaluation=False):
-        self.path = path        
+        self.path = path
+        self.simulation_time = simulation_time
         amount_semaphores = len(semaphores_information)
         n_var = amount_semaphores
         upper_bounds: list[float] = []
@@ -50,6 +51,7 @@ class TrafficLightOptimizationParallel(ElementwiseProblem):
         
         self.n_lights = amount_semaphores
         self.cycle_time = cycle_time
+        self.simulation_time = simulation_time
         self.semaphores_original_information = semaphores_information.copy()
         self.shared_cache = shared_cache
         self.tolerance = tolerance
@@ -92,6 +94,7 @@ class TrafficLightOptimizationParallel(ElementwiseProblem):
                                     green_times=green_times, 
                                     times_for_last_green=calculated_last_greens,
                                     cycle_time=self.cycle_time,
+                                    simulation_time=self.simulation_time,
                                     semaphores_original_information=self.semaphores_original_information,
                                     path=self.path,
                                     gui=False, verbose=False)

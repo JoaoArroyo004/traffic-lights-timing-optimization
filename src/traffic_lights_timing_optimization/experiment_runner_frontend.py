@@ -119,6 +119,8 @@ def parse_args():
     parser.add_argument("--generation", type=int, required=True)
     parser.add_argument("--input_folder", type=str, required=True)
     parser.add_argument("--output_folder", type=str, required=True)
+    parser.add_argument("--simulation_time", type=int, required=True)
+    parser.add_argument("--cycle_time", type=int, required=True)
 
     return parser.parse_args()
 
@@ -174,7 +176,13 @@ def run_experiment(args):
     print(f"Diretorio atual: {os.getcwd()}")
 
     # Run optimization and get results
-    res = optimize(pop_size=args.population, n_gen=args.generation, input_file=input_file, plot_pareto=False)
+    res = optimize(pop_size=args.population, 
+                   n_gen=args.generation, 
+                   input_file=input_file, 
+                   simulation_time=args.simulation_time, 
+                   cycle_time=args.cycle_time, 
+                   plot_pareto=False
+                   )
     F = res.F
     
     
@@ -204,6 +212,7 @@ def run_experiment(args):
     # Evaluate traditional policy
     # if not (API_RELATIVE_PATH / args.output_folder / 'Run_0').exists():
     res_t = evaluate_std_policy(gui=False,
+        simulation_time=args.simulation_time,
         verbose=False,
         path=input_file)
 

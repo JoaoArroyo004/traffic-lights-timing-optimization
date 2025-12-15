@@ -15,6 +15,8 @@ def parse_args():
     parser.add_argument("--offsets", type=str, required=False)
     parser.add_argument("--greens", type=str, required=False)
     parser.add_argument("--last_greens", type=str, required=False)
+    parser.add_argument("--simulation_time", type=int, required=True)
+    parser.add_argument("--cycle_time", type=int, required=False)
 
     # se você for adicionar no futuro:
     parser.add_argument("--gui", action="store_true")
@@ -50,7 +52,8 @@ if __name__ == "__main__":
         green_times = green_times,        
         times_for_last_green=calculated_last_greens,
         semaphores_original_information=semaphores_information,
-        cycle_time=75,
+        cycle_time=args.cycle_time,
+        simulation_time=args.simulation_time,
         gui=args.gui,
         verbose=args.verbose,
         path=input_file)
@@ -59,4 +62,5 @@ if __name__ == "__main__":
 
         evaluate_std_policy(gui=args.gui,
             verbose=args.verbose,
+            simulation_time=args.simulation_time,
             path=input_file)
