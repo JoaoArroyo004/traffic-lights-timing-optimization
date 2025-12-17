@@ -1,5 +1,6 @@
 
 import csv
+import time
 import numpy as np
 import os
 import threading
@@ -82,11 +83,11 @@ class TrafficLightOptimizationParallel(ElementwiseProblem):
             writer.writerow(["OFFSETS ", offsets_fmt])
             writer.writerow(["GREENS ", greens_fmt])
             writer.writerow(["LAST_GREENS ", last_greens_fmt])
-            
         if (calculated_last_greens[0] > 0):            
             if cache_key in self.shared_cache:
                 metrics = self.shared_cache[cache_key]
                 print(f"Cache hit for input: {cache_key}")
+                time.sleep(0.05) # fix broken pipe error
             else:
                 metrics = evaluate_policy(offsets=offsets, 
                                     green_times=green_times, 

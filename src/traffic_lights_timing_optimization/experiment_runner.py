@@ -42,9 +42,9 @@ def move_all_files(src: str, dst: str):
             dst_path = os.path.join(dst, filename)
             shutil.move(src_path, dst_path)
 
-def run_experiment(amount_runs):
-    for i in range (1, amount_runs + 1):
-        optimize()
+def run_experiment(amount_runs, generations, population, sumo_path, cycle_time, threads):
+    for i in range (1, amount_runs + 1):        
+        optimize(generations, population, sumo_path, cycle_time, threads)
         curr_dir = f'./experiment_ID{i}'
         create_directory(curr_dir)
         move_all_files('./logs_parallel', curr_dir)
@@ -54,4 +54,4 @@ def run_experiment(amount_runs):
 
 
 if __name__ == '__main__':
-    run_experiment(amount_runs=3)
+    run_experiment(amount_runs=3, generations=5, population= 5, sumo_path="./santo-andre-extendido/demand.sumocfg", cycle_time=75, threads=4)

@@ -5,7 +5,7 @@ from traffic_lights_timing_optimization.fetch_graph_information import fetch_gra
 if __name__ == '__main__':                    
     SUMO_CFG_PATH = "./santo-andre-extendido/demand.sumocfg"    
     semaphores_information = fetch_graph_information(SUMO_CFG_PATH).copy()
-    cycle_time = 60
+    cycle_time = 75
 
     offsets = [69.52, 52.61, 50.79]
     green_times = [56.80, 46.18, 1.27, 54.09]
@@ -18,7 +18,7 @@ if __name__ == '__main__':
         green_times = green_times,        
         times_for_last_green=calculated_last_greens,
         semaphores_original_information=semaphores_information,
-        cycle_time=60,
+        cycle_time=cycle_time,
         gui=True,
         verbose=True,
         path=SUMO_CFG_PATH)
