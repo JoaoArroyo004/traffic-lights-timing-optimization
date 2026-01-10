@@ -6,6 +6,7 @@ from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 from traffic_lights_timing_optimization.problem_definition_sequential import TrafficLightOptimizationSequential
+from datasetgeneration import EvaluationLogger
 
 CYCLE_TIME = 60
 # SUMO_CONFIG_PATH = "./traffic-light-benchmark/four_semaphores/traffic.sumocfg"
@@ -16,19 +17,26 @@ problem = TrafficLightOptimizationSequential(cycle_time=CYCLE_TIME, path=SUMO_CO
                                    semaphores_information=semaphores_information)
 
 algorithm = NSGA2(
-    pop_size=4,
+    pop_size=100,
     crossover= SBX(prob=0.9, eta=20),
     mutation = PM(prob=0.1, eta=20),
     eliminate_duplicates=True
 )
 
-termination = get_termination("n_gen", 4)
+termination = get_termination("n_gen", 1000)
+record_X=True
+logger = EvaluationLogger(record_X=record_X)
+seed =1
 
-res = minimize(problem,
-               algorithm,
-               termination,
-               seed=1,
-               verbose=True)
+res = minimize(
+        problem,
+        algorithm,
+        termination,
+        seed=seed,
+        callback=logger,
+        save_history=False,
+        verbose=True
+    )
 
 # --- PARETO PLOT ---
 print("\n=== Pareto Front Solutions (Objective Values) ===")
