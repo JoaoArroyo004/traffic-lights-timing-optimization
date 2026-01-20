@@ -5,8 +5,12 @@ from database import create_db_and_tables, get_session
 from sqlmodel import Session, select
 from models import Scenario
 from pydantic import BaseModel
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any, Tuple
 import zipfile, subprocess, io, uvicorn, shutil, json, csv, ast, base64
+import matplotlib
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt
+
 
 
 
@@ -423,3 +427,234 @@ def parse_solutions_csv(csv_path: Path) -> List[Dict]:
                 offsets = greens = last_greens = None
 
     return solutions
+
+
+
+
+def read_first_results_line(path: Path) -> list[float]:
+    if not path.exists():
+        raise FileNotFoundError(path)
+    for line in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = line.strip()
+        if line.startswith("RESULTS"):
+            parts = [p.strip() for p in line.split(",")[1:] if p.strip()]
+            return [float(x) for x in parts]
+    raise ValueError(f"Nenhuma linha RESULTS em {path}")
+
+def parse_solutions_file(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+
+    def parse_list(v: str) -> list[float]:
+        v = v.strip().strip('"').strip()
+        return [float(x) for x in ast.literal_eval(v)]
+
+    sols, cur = [], {}
+    for raw in path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw.strip()
+        if not line:
+            if {"offsets","greens","last_greens","results"} <= cur.keys():
+                sols.append(cur)
+            cur = {}
+            continue
+
+        if line.startswith("RESULTS"):
+            cur["results"] = [float(x) for x in line.split(",")[1:] if x.strip()]
+            continue
+
+        if "," in line:
+            k, v = line.split(",", 1)
+            k = k.strip().upper()
+            v = v.strip()
+            if k == "OFFSETS":
+                cur["offsets"] = parse_list(v)
+            elif k == "GREENS":
+                cur["greens"] = parse_list(v)
+            elif k == "LAST_GREENS":
+                cur["last_greens"] = parse_list(v)
+
+    if {"offsets","greens","last_greens","results"} <= cur.keys():
+        sols.append(cur)
+
+    return sols
+
+def pareto_nondominated(solutions: list[dict]) -> list[dict]:
+    def dominates(a, b) -> bool:
+        return (a[0] <= b[0] and a[1] <= b[1]) and (a[0] < b[0] or a[1] < b[1])
+
+    pts = [(s["results"][0], s["results"][-1]) for s in solutions]
+    out = []
+    for i, p in enumerate(pts):
+        if not any(dominates(pts[j], p) for j in range(len(pts)) if j != i):
+            out.append(solutions[i])
+    return out
+
+def write_traditional_csv(path: Path, traditional_results: list[float]) -> None:
+    line = "RESULTS:," + ",".join(str(x) for x in traditional_results)
+    path.write_text(line + "\n", encoding="utf-8")
+
+
+
+def write_pareto_csv(path: Path, pareto: list[dict]) -> None:
+    def fmt_list(nums: list[float]) -> str:
+        return str([f"{x}" for x in nums])
+
+    lines: list[str] = []
+
+    for s in pareto:
+        lines.append(f'OFFSETS ,"{fmt_list(s["offsets"])}"')
+        lines.append(f'GREENS ,"{fmt_list(s["greens"])}"')
+        lines.append(f'LAST_GREENS ,"{fmt_list(s["last_greens"])}"')
+        lines.append("RESULTS:," + ",".join(str(x) for x in s["results"]))
+        lines.append("")
+
+    path.write_text("\n".join(lines), encoding="utf-8")
+
+
+@app.post("/scenarios/generate_final/{scenario_id}")
+def generate_final(scenario_id: int, session: Session = Depends(get_session)):
+    sim = session.get(Scenario, scenario_id)
+    if not sim:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    folder = EXTRACT_DIR / sim.name
+    final_dir = folder / "Final"
+    final_dir.mkdir(exist_ok=True)
+
+    runs = folder / "Runs"
+
+    try:
+        traditional_results = read_first_results_line(runs / "Run_0" / "traditional.csv")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Erro no tradicional.csv: {e}")
+
+    all_solutions = []
+    for run_dir in sorted(runs.glob("Run_*")):
+        if run_dir.name == "Run_0":
+            continue
+        sols = parse_solutions_file(run_dir / "solutions.csv")
+        all_solutions.extend(sols)
+
+    pareto = pareto_nondominated(all_solutions)
+
+
+    traditional_csv_path = final_dir / "traditional.csv"
+    pareto_csv_path = final_dir / "final.csv"
+    pareto_png_path = final_dir / "pareto_front.png"
+
+
+    write_traditional_csv(traditional_csv_path, traditional_results)
+    write_pareto_csv(pareto_csv_path, pareto)
+    write_pareto_plot_png(pareto_png_path, pareto, traditional_results)
+
+    return {"msg": "Final results generated successfully."}
+
+def write_pareto_plot_png(
+    out_path: Path,
+    pareto_solutions: List[Dict],
+    traditional_results: List[float],
+) -> None:
+    xs = [s["results"][-1] for s in pareto_solutions] 
+    ys = [s["results"][0] for s in pareto_solutions]  
+
+    trad_x = traditional_results[-1]
+    trad_y = traditional_results[0]  
+
+    plt.figure(figsize=(6, 5))
+    if xs and ys:
+        plt.scatter(xs, ys, alpha=0.7)
+    plt.scatter(trad_x, trad_y, color="red", alpha=0.7)
+
+    plt.xlabel("Max Queue Length")
+    plt.ylabel("Average Waiting Time")
+    plt.title("Traffic Optimization - Pareto Front (NSGA-II)")
+    plt.grid(True)
+
+    out_path.parent.mkdir(exist_ok=True, parents=True)
+    plt.savefig(out_path, dpi=300, bbox_inches="tight")
+    plt.close()
+
+
+def parse_final_csv(final_csv_path: Path) -> List[Dict[str, Any]]:
+
+    if not final_csv_path.exists():
+        return []
+
+    def parse_list(v: str) -> List[float]:
+        v = v.strip().strip('"').strip()
+        return [float(x) for x in ast.literal_eval(v)]
+
+    sols: List[Dict[str, Any]] = []
+    cur: Dict[str, Any] = {}
+
+    for raw in final_csv_path.read_text(encoding="utf-8", errors="ignore").splitlines():
+        line = raw.strip()
+
+        if not line:
+            if {"offsets", "greens", "last_greens", "results"} <= cur.keys():
+                sols.append(cur)
+            cur = {}
+            continue
+
+        if line.startswith("RESULTS"):
+            parts = [p.strip() for p in line.split(",")[1:] if p.strip() != ""]
+            nums = [float(x) for x in parts]
+            if len(nums) >= 3:
+                cur["results"] = {
+                    "avg_wait": nums[0],
+                    "avg_queue": nums[1],
+                    "max_queue": nums[2],
+                }
+            continue
+
+        if "," in line:
+            k, v = line.split(",", 1)
+            k = k.strip().upper()
+            v = v.strip()
+
+            if k == "OFFSETS":
+                cur["offsets"] = parse_list(v)
+            elif k == "GREENS":
+                cur["greens"] = parse_list(v)
+            elif k == "LAST_GREENS":
+                cur["last_greens"] = parse_list(v)
+
+    if {"offsets", "greens", "last_greens", "results"} <= cur.keys():
+        sols.append(cur)
+
+    return sols
+
+
+@app.get("/scenarios/final/{scenario_id}")
+def get_final_results(scenario_id: int, session: Session = Depends(get_session)):
+    sim = session.get(Scenario, scenario_id)
+    if not sim:
+        raise HTTPException(status_code=404, detail="Scenario not found")
+
+    final_folder = EXTRACT_DIR / sim.name / "Final"
+    if not final_folder.exists():
+        return {
+            "name": sim.name,
+            "traditional_policy_results": {},
+            "pareto_solutions": [],
+        }
+    
+    # ---- IMAGEM ----
+    img_path = final_folder / "pareto_front.png"
+    img = None
+    if img_path.exists():
+        with img_path.open("rb") as f:
+            encoded = base64.b64encode(f.read()).decode("utf-8")
+            img = f"data:image/png;base64,{encoded}"
+
+    traditional_policy_results = get_traditional_policy_results(final_folder)
+
+    pareto_solutions = parse_final_csv(final_folder / "final.csv")
+
+    return {
+        "name": sim.name,
+        "traditional_policy_results": traditional_policy_results,
+        "pareto_solutions": pareto_solutions,
+        "n_pareto": len(pareto_solutions),
+        "pareto_image": img,
+    }
