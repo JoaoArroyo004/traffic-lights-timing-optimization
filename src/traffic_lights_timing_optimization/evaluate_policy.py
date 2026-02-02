@@ -10,7 +10,7 @@ from traffic_lights_timing_optimization.fetch_graph_information import fetch_gra
 SOFT_INF = 1_000
 INF = 100_000_00
 
-SIMULATION_TIME = 1_800 # SIMULATION TIME
+SIMULATION_TIME = 3_600 # SIMULATION TIME
 MAX_DEADLOCK = 200 # If no vehicle reaches a destination in a 200 consecutive step cout, halt.
 
 def calculate_last_greens(green_times: list[float], semaphores_original_information: list[list[tuple[str,int]]],
@@ -53,7 +53,7 @@ def calculate_last_greens(green_times: list[float], semaphores_original_informat
     print(f"[DBG] Check calculated last_greens:\n {times_for_last_green}")
     return times_for_last_green
 
-def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_original_information, cycle_time=60, gui=False, verbose=False,
+def evaluate_policy(offsets, green_times, times_for_last_green, semaphores_original_information, cycle_time=75, gui=False, verbose=False,
                     path="./traffic-light-benchmark/four_semaphores/traffic.sumocfg"):
     """
     Evaluates a traffic light policy by adjusting the green phase durations and offsets    

@@ -6,9 +6,9 @@ from pymoo.operators.crossover.sbx import SBX
 from pymoo.operators.mutation.pm import PM
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 from traffic_lights_timing_optimization.problem_definition_sequential import TrafficLightOptimizationSequential
-from datasetgeneration import EvaluationLogger
+from traffic_lights_timing_optimization.datasetgeneration import EvaluationLogger
 
-CYCLE_TIME = 60
+CYCLE_TIME = 75
 # SUMO_CONFIG_PATH = "./traffic-light-benchmark/four_semaphores/traffic.sumocfg"
 SUMO_CONFIG_PATH = "./santo-andre-benchmark/demand.sumocfg"
 semaphores_information = fetch_graph_information(SUMO_CONFIG_PATH).copy()
@@ -35,7 +35,7 @@ res = minimize(
         seed=seed,
         callback=logger,
         save_history=False,
-        verbose=True
+        verbose=False
     )
 
 # --- PARETO PLOT ---

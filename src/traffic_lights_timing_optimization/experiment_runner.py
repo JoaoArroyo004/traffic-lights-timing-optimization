@@ -48,10 +48,10 @@ def run_experiment(amount_runs, generations, population, sumo_path, cycle_time, 
         curr_dir = f'./experiment_ID{i}'
         create_directory(curr_dir)
         move_all_files('./logs_parallel', curr_dir)
-        move_file('gen_log.txt', curr_dir)
+        # move_file('gen_log.txt', curr_dir)
         move_file('seed.txt', curr_dir)
         move_file('pareto_front.png', curr_dir)        
 
 
 if __name__ == '__main__':
-    run_experiment(amount_runs=3, generations=5, population= 5, sumo_path="./santo-andre-extendido/demand.sumocfg", cycle_time=75, threads=4)
+    run_experiment(amount_runs=1, generations=1000, population= 100, sumo_path="./santo-andre-extendido/demand.sumocfg", cycle_time=75, threads=4)

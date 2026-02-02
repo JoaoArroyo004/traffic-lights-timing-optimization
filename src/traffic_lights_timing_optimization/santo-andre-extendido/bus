@@ -1,19 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- generated on 2025-11-20 14:43:49 by Eclipse SUMO GUI Version 1.24.0
+<!-- generated on 2026-01-29 18:01:16 by Eclipse SUMO sumo Version 1.24.0
 <sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
 
     <input>
-        <net-file value="C:\Users\pacot\Desktop\Teste\network.net.xml"/>
-        <route-files value="C:\Users\pacot\Desktop\Teste\demand.rou.xml"/>
-        <additional-files value="C:\Users\pacot\Desktop\Teste\demand.add.xml"/>
+        <net-file value="./santo-andre-extendido/network.net.xml"/>
+        <route-files value="./santo-andre-extendido/demand.rou.xml"/>
+        <additional-files value="./santo-andre-extendido/demand.add.xml"/>
     </input>
+
+    <output>
+        <tripinfo-output value="/tmp/sumo_sim_80oo3trt/tripinfo.xml"/>
+        <vehroute-output value="/tmp/sumo_sim_80oo3trt/routes.xml"/>
+    </output>
+
+    <processing>
+        <time-to-teleport value="-1"/>
+        <waiting-time-memory value="1000"/>
+    </processing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <traci_server>
+        <remote-port value="53885"/>
+    </traci_server>
+
+    <gui_only>
+        <start value="true"/>
+    </gui_only>
 
 </sumoConfiguration>
 -->
 
 <e3Detector xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/det_e3_file.xsd">
-   <interval begin="0.00" end="3865.00" id="e3_0" meanTravelTime="0.29" meanOverlapTravelTime="1.03" meanSpeed="16.27" meanHaltsPerVehicle="0.00" meanTimeLoss="0.03" vehicleSum="24" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
-   <interval begin="0.00" end="3865.00" id="e3_5" meanTravelTime="0.13" meanOverlapTravelTime="1.54" meanSpeed="7.76" meanHaltsPerVehicle="0.00" meanTimeLoss="0.69" vehicleSum="23" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
-   <interval begin="0.00" end="3865.00" id="e3_6" meanTravelTime="0.09" meanOverlapTravelTime="1.19" meanSpeed="10.89" meanHaltsPerVehicle="0.00" meanTimeLoss="0.02" vehicleSum="9" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+   <interval begin="0.00" end="3601.00" id="e3_0" meanTravelTime="0.29" meanOverlapTravelTime="1.02" meanSpeed="16.29" meanHaltsPerVehicle="0.00" meanTimeLoss="0.01" vehicleSum="23" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+   <interval begin="0.00" end="3601.00" id="e3_5" meanTravelTime="0.12" meanOverlapTravelTime="1.39" meanSpeed="8.68" meanHaltsPerVehicle="0.00" meanTimeLoss="0.57" vehicleSum="20" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
+   <interval begin="0.00" end="3601.00" id="e3_6" meanTravelTime="0.09" meanOverlapTravelTime="1.18" meanSpeed="10.97" meanHaltsPerVehicle="0.00" meanTimeLoss="0.02" vehicleSum="8" meanSpeedWithin="-1.00" meanHaltsPerVehicleWithin="-1.00" meanDurationWithin="-1.00" vehicleSumWithin="0" meanIntervalSpeedWithin="-1.00" meanIntervalHaltsPerVehicleWithin="-1.00" meanIntervalDurationWithin="-1.00" meanTimeLossWithin="-1.00"/>
 </e3Detector>

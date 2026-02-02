@@ -9,6 +9,7 @@ from pymoo.operators.mutation.pm import PM
 from traffic_lights_timing_optimization.callback_logger import LogGenerationCallback
 from traffic_lights_timing_optimization.fetch_graph_information import fetch_graph_information
 from traffic_lights_timing_optimization.problem_definition_parallel import TrafficLightOptimizationParallel
+from traffic_lights_timing_optimization.datasetgeneration import EvaluationLogger
 import multiprocessing
 from pymoo.core.problem import StarmapParallelization
 
@@ -40,6 +41,9 @@ def optimize(generations, population, sumo_path="./santo-andre-extendido/demand.
 
     termination = get_termination("n_gen", generations)
     seed = random.randint(0, 2**32 - 1)
+    record_X=True
+    logger = EvaluationLogger(record_X=record_X)
+    
     with open("seed.txt", "w") as f:
         f.write(str(seed))
 
@@ -47,8 +51,9 @@ def optimize(generations, population, sumo_path="./santo-andre-extendido/demand.
                 algorithm,
                 termination,
                 seed = seed,
-                callback = LogGenerationCallback(),
-                verbose=False)
+                callback = logger,
+                save_history = False,
+                verbose=True)
     
     pool.close()
 
